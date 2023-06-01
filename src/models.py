@@ -31,10 +31,23 @@ class People(db.Model):
     def __repr__(self):
         return '<People %r>' % self.name
 
+    def serialize_name(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+        }   
+    
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.name,
+            "name": self.name,
+            "info": self.info,
+            "birth_year": self.birth_year,
+            "eye_color": self.eye_color,
+            "hair_color": self.hair_color,
+            "height": self.height,
+            "mass": self.mass,
+            "skin_color": self.skin_color
         }   
 
 class Planet(db.Model):
@@ -52,7 +65,19 @@ class Planet(db.Model):
     def serialize(self):
         return {
             "id": self.id,
-            "email": self.name,
+            "name": self.name,
+            "info": self.info,
+            "climate": self.climate,
+            "diameter": self.diameter,
+            "gravity": self.gravity,
+            "terrain": self.terrain,
+        }
+    
+    def serialize_name(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+
         }
 
 class FavoritePeople(db.Model):
