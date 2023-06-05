@@ -8,7 +8,7 @@ from flask_swagger import swagger
 from flask_cors import CORS
 from utils import APIException, generate_sitemap
 from admin import setup_admin
-from models import db, User, People, Planet
+from models import db, User, People, Planet, FavoritePeople, FavoritePlanet
 #from models import Person
 
 app = Flask(__name__)
@@ -103,6 +103,75 @@ def get_planet_detail(planet_id):
         return jsonify(planet_detail), 200
     else:
         return jsonify({"message": "Planet not found"}), 404
+    
+
+@app.route('/favoritePeople', methods=['POST'])
+def create_favpeople():
+    request_fav_people = request.get_json()
+
+    new_fav_people = FavoritePeople(user_id=request_fav_people["user"], people_id=request_fav_people["people"])
+    db.session.add(new_fav_people)
+    db.session.commit()
+
+    return jsonify(request_fav_people), 200 
+
+@app.route('/favoritePeople', methods=['GET'])
+def get_favpeople():
+
+    fav_people = FavoritePeople.query.all()
+    all_favpeople = list(map(lambda x: x.serialize(), fav_people))
+    return jsonify(all_favpeople), 200 
+
+@app.route('/<int:user_id>/favoritePeople', methods=['GET'])
+def get_user_favpeople(user_id):
+
+    userfav_people = FavoritePeople.query.filter_by(user_id=user_id).all()
+
+    if not userfav_people:
+        return {"message": "Este user no ha marcado ningún personaje favorito"}, 404
+   
+    serialized_favorite_people = [{
+        "ID": favorite.people_id,
+        "Character's name": People.query.get(favorite.people_id).name
+    } for favorite in userfav_people]
+
+    return {'Personajes favoritos del usuario': serialized_favorite_people}, 200
+
+
+@app.route('/favoritePlanet', methods=['POST'])
+def create_favplanet():
+    request_fav_planet = request.get_json()
+
+    new_fav_planet = FavoritePlanet(user_id=request_fav_planet["user"], planet_id=request_fav_planet["planet"])
+    db.session.add(new_fav_planet)
+    db.session.commit()
+
+    return jsonify(request_fav_planet), 200 
+
+
+@app.route('/favoritePlanet', methods=['GET'])
+def get_favplanet():
+
+    fav_planets = FavoritePlanet.query.all()
+    all_favplanets = list(map(lambda x: x.serialize(), fav_planets))
+    return jsonify(all_favplanets), 200 
+
+
+@app.route('/<int:user_id>/favoritePlanets', methods=['GET'])
+def get_user_favplanets(user_id):
+
+    userfav_planets = FavoritePlanet.query.filter_by(user_id=user_id).all()
+
+    if not userfav_planets:
+        return {"message": "Este user no ha marcado ningún planeta favorito"}, 404
+   
+    serialized_favorite_planet = [{
+        "ID": favorite.planet_id,
+        "Planet name": Planet.query.get(favorite.planet_id).name
+    } for favorite in userfav_planets]
+
+    return {'Planetas favoritos del usuario': serialized_favorite_planet}, 200
+
 
 
 

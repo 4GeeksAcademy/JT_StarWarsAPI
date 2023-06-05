@@ -8,8 +8,6 @@ class User(db.Model):
     password = db.Column(db.String(80), unique=False, nullable=False)
     is_active = db.Column(db.Boolean(), unique=False, nullable=True, default=False)
 
-    def __repr__(self):
-        return '<User %r>' % self.email
 
     def serialize(self):
         return {
@@ -27,9 +25,6 @@ class People(db.Model):
     height = db.Column(db.String)
     mass = db.Column(db.String)
     skin_color = db.Column(db.String)
-
-    def __repr__(self):
-        return '<People %r>' % self.name
 
     def serialize_name(self):
         return {
@@ -59,9 +54,6 @@ class Planet(db.Model):
     gravity = db.Column(db.String)
     terrain = db.Column(db.String)
 
-    def __repr__(self):
-        return '<Planet %r>' % self.name
-
     def serialize(self):
         return {
             "id": self.id,
@@ -77,7 +69,6 @@ class Planet(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-
         }
 
 class FavoritePeople(db.Model):
@@ -85,12 +76,10 @@ class FavoritePeople(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     people_id = db.Column(db.Integer, db.ForeignKey(People.id))
 
-    def __repr__(self):
-        return '<FavoritePeople %r>' % self.id
-
     def serialize(self):
         return {
             "id": self.id,
+            "user": self.user_id,
             "people": self.people_id,
         }
     
@@ -99,12 +88,10 @@ class FavoritePlanet(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey(User.id))
     planet_id = db.Column(db.Integer, db.ForeignKey(Planet.id))
 
-    def __repr__(self):
-        return '<FavoritePlanet %r>' % self.id
-
     def serialize(self):
         return {
             "id": self.id,
+            "user": self.user_id,
             "planet": self.planet_id,
         }
     
