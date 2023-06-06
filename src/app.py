@@ -170,9 +170,42 @@ def get_user_favplanets(user_id):
         "Planet name": Planet.query.get(favorite.planet_id).name
     } for favorite in userfav_planets]
 
-    return {'Planetas favoritos del usuario': serialized_favorite_planet}, 200
+    return {"Planetas favoritos del usuario": serialized_favorite_planet}, 200
 
 
+@app.route('/user/<int:user_id>/planet/<int:planet_id>', methods=['POST'])
+def post_user_favplanet(user_id, planet_id):
+
+    user = User.query.get(user_id)
+    if not user:
+        return {"error": "El usuario no existe"}, 404
+    
+    planet = Planet.query.get(planet_id)
+    if not planet:
+        return {"error": "El planeta no existe"}, 404
+    
+    new_fav_planet = FavoritePlanet(user_id=user_id, planet_id=planet_id)
+    db.session.add(new_fav_planet)
+    db.session.commit()
+    
+    return {"message": "Planet agregado como favorito existosamente"}
+
+@app.route('/user/<int:user_id>/people/<int:people_id>', methods=['POST'])
+def post_user_favpeople(user_id, people_id):
+
+    user = User.query.get(user_id)
+    if not user:
+        return {"error": "El usuario no existe"}, 404
+    
+    people = People.query.get(people_id)
+    if not people:
+        return {"error": "El personaje no existe"}, 404
+    
+    new_fav_people = FavoritePeople(user_id=user_id, people_id=people_id)
+    db.session.add(new_fav_people)
+    db.session.commit()
+    
+    return {"message": "Personaje agregado como favorito existosamente"}
 
 
 # this only runs if `$ python src/app.py` is executed
