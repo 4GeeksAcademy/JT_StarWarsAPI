@@ -115,12 +115,14 @@ def create_favpeople():
 
     return jsonify(request_fav_people), 200 
 
+
 @app.route('/favoritePeople', methods=['GET'])
 def get_favpeople():
 
     fav_people = FavoritePeople.query.all()
     all_favpeople = list(map(lambda x: x.serialize(), fav_people))
     return jsonify(all_favpeople), 200 
+
 
 @app.route('/<int:user_id>/favoritePeople', methods=['GET'])
 def get_user_favpeople(user_id):
@@ -206,6 +208,35 @@ def post_user_favpeople(user_id, people_id):
     db.session.commit()
     
     return {"message": "Personaje agregado como favorito existosamente"}
+
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['DELETE'])
+def delete_favplanet(planet_id):
+
+    favplanets = FavoritePlanet.query.filter_by(planet_id=planet_id).all()
+    if not favplanets:
+        return {"Error": "No hay registros de favoritos de este planeta"}
+    
+    for favplanet in favplanets:
+        db.session.delete(favplanet)
+    db.session.commit()
+
+    return {"message": "Registros de este planeta eliminados de favoritos"}, 200 
+
+
+@app.route('/favorite/people/<int:people_id>', methods=['DELETE'])
+def delete_favpeople(people_id):
+
+    favpeople = FavoritePeople.query.filter_by(people_id=people_id).all()
+    if not favpeople:
+        return {"Error": "No hay registros de favoritos de este personaje"}
+    
+    for person in favpeople:
+        db.session.delete(person)
+    db.session.commit()
+
+    return {"message": "Registros de este personaje eliminados de favoritos"}, 200 
+
 
 
 # this only runs if `$ python src/app.py` is executed
